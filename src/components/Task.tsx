@@ -32,12 +32,11 @@ export default function Task({ task, onDelete, onEdit }: TaskProps) {
       <div
         ref={setNodeRef}
         style={style}
-        className={`bg-white p-3 mb-2 rounded-lg shadow hover:shadow-md transition cursor-pointer ${
+        className={`bg-white p-3 mb-2 rounded-lg shadow hover:shadow-md transition ${
           isSelected ? "border-2 border-blue-500" : "border border-transparent"
         }`}
         onClick={() => {
           dispatch({ type: "SELECT_TASK", payload: { taskId: task.id } });
-          setIsModalOpen(true);
         }}
       >
         <div className="flex justify-between items-center">
@@ -51,7 +50,7 @@ export default function Task({ task, onDelete, onEdit }: TaskProps) {
             <button
               {...attributes}
               {...listeners}
-              className="text-gray-400 hover:text-gray-600"
+              className="text-gray-400 hover:text-gray-600 cursor-pointer"
               aria-label="Drag handle"
             >
               <GripVertical size={16} />
@@ -59,9 +58,19 @@ export default function Task({ task, onDelete, onEdit }: TaskProps) {
             <button
               onClick={(e) => {
                 e.stopPropagation();
+                setIsModalOpen(true);
+              }}
+              className="text-blue-500 hover:text-blue-700 text-xs"
+              aria-label={`View details for task ${task.title}`}
+            >
+              Details
+            </button>
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
                 if (window.confirm(`Delete task "${task.title}"?`)) onDelete();
               }}
-              className="text-red-500 hover:text-red-700 text-sm"
+              className="text-red-500 hover:text-red-700 text-xs"
               aria-label={`Delete task ${task.title}`}
             >
               Delete
