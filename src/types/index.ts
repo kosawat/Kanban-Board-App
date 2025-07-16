@@ -1,17 +1,17 @@
-export interface Task {
+export interface TaskType {
   id: string;
   title: string;
   description?: string;
   columnId: string;
-  comments: Comment[];
+  comments: CommentType[];
 }
 
-export interface Column {
+export interface ColumnType {
   id: string;
   title: string;
 }
 
-export interface Comment {
+export interface CommentType {
   id: string;
   content: string;
   taskId: string;

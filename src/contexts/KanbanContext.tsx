@@ -8,12 +8,12 @@ import {
   useEffect,
 } from "react";
 import { useLocalStorage } from "../hooks/useLocalStorage";
-import { Column, Task } from "../types";
+import { ColumnType, TaskType } from "../types";
 import { generateId } from "../utils/uuid";
 
 interface KanbanState {
-  columns: Column[];
-  tasks: Task[];
+  columns: ColumnType[];
+  tasks: TaskType[];
 }
 
 type Action =
@@ -24,7 +24,7 @@ type Action =
       type: "ADD_TASK";
       payload: { title: string; columnId: string; description?: string };
     }
-  | { type: "UPDATE_TASK"; payload: Task }
+  | { type: "UPDATE_TASK"; payload: TaskType }
   | { type: "DELETE_TASK"; payload: { id: string } }
   | { type: "ADD_COMMENT"; payload: { taskId: string; content: string } }
   | { type: "UPDATE_COMMENT"; payload: { id: string; content: string } }

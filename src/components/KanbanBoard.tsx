@@ -2,6 +2,7 @@
 
 import { useKanban } from "@/contexts/KanbanContext";
 import React, { useState } from "react";
+import Column from "./Column";
 
 export default function KanbanBoard() {
   const { state, dispatch } = useKanban();
@@ -34,10 +35,7 @@ export default function KanbanBoard() {
       </div>
       <div className="flex gap-4 flex-wrap">
         {state.columns.map((column) => (
-          <div key={column.id} className="bg-gray-100 p-4 rounded-lg w-64">
-            <h2 className="text-lg font-bold">{column.title}</h2>
-            {/* Tasks will go here */}
-          </div>
+          <Column column={column} key={column.id} />
         ))}
       </div>
     </div>
