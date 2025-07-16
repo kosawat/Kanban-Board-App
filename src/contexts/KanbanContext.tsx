@@ -31,7 +31,11 @@ type Action =
       payload: { taskId: string; content: string; parentId?: string };
     }
   | { type: "UPDATE_COMMENT"; payload: { id: string; content: string } }
-  | { type: "DELETE_COMMENT"; payload: { id: string } };
+  | { type: "DELETE_COMMENT"; payload: { id: string } }
+  | {
+      type: "MOVE_TASK";
+      payload: { taskId: string; targetColumnId: string; targetIndex: number };
+    };
 
 interface KanbanContextType {
   state: KanbanState;
@@ -143,6 +147,29 @@ function kanbanReducer(state: KanbanState, action: Action): KanbanState {
             (comment) => comment.id !== action.payload.id
           ),
         })),
+      };
+    case "MOVE_TASK":
+      const { taskId, targetColumnId, targetIndex } = action.payload;
+      const task = state.tasks.find((t) => t.id === taskId);
+      if (!task) return state;
+
+      // Remove task from current position
+      const tasksWithoutMoved = state.tasks.filter((t) => t.id !== taskId);
+      // Update task's columnId
+      const updatedTask = { ...task, columnId: targetColumnId };
+      // Get tasks in the target column
+      const targetColumnTasks = tasksWithoutMoved.filter(
+        (t) => t.columnId === targetColumnId
+      );
+      // Insert task at the target index
+      targetColumnTasks.splice(targetIndex, 0, updatedTask);
+      // Combine tasks from target column with tasks from other columns
+      const otherColumnTasks = tasksWithoutMoved.filter(
+        (t) => t.columnId !== targetColumnId
+      );
+      return {
+        ...state,
+        tasks: [...otherColumnTasks, ...targetColumnTasks],
       };
     default:
       return state;

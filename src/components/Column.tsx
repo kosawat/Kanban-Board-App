@@ -2,6 +2,11 @@ import React, { useState } from "react";
 import { ColumnType } from "@/types";
 import { useKanban } from "@/contexts/KanbanContext";
 import Task from "./Task";
+import { useDroppable } from "@dnd-kit/core";
+import {
+  SortableContext,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
 
 interface ColumnProps {
   column: ColumnType;
@@ -12,6 +17,7 @@ export default function Column({ column }: ColumnProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [title, setTitle] = useState(column.title);
   const [newTaskTitle, setNewTaskTitle] = useState("");
+  const { setNodeRef } = useDroppable({ id: column.id });
 
   const tasks = state.tasks.filter((task) => task.columnId === column.id);
 
@@ -43,7 +49,10 @@ export default function Column({ column }: ColumnProps) {
   };
 
   return (
-    <div className="bg-gray-100 p-4 rounded-lg w-64 min-h-[200px] flex flex-col">
+    <div
+      className="bg-gray-100 p-4 rounded-lg w-64 min-h-[200px] flex flex-col"
+      ref={setNodeRef}
+    >
       {isEditing ? (
         <input
           type="text"
@@ -78,18 +87,23 @@ export default function Column({ column }: ColumnProps) {
         {tasks.length === 0 ? (
           <p className="text-gray-500 text-sm">No tasks yet</p>
         ) : (
-          tasks.map((task) => (
-            <Task
-              key={task.id}
-              task={task}
-              onDelete={() =>
-                dispatch({ type: "DELETE_TASK", payload: { id: task.id } })
-              }
-              onEdit={(updatedTask) =>
-                dispatch({ type: "UPDATE_TASK", payload: updatedTask })
-              }
-            />
-          ))
+          <SortableContext
+            items={tasks.map((task) => task.id)}
+            strategy={verticalListSortingStrategy}
+          >
+            {tasks.map((task) => (
+              <Task
+                key={task.id}
+                task={task}
+                onDelete={() =>
+                  dispatch({ type: "DELETE_TASK", payload: { id: task.id } })
+                }
+                onEdit={(updatedTask) =>
+                  dispatch({ type: "UPDATE_TASK", payload: updatedTask })
+                }
+              />
+            ))}
+          </SortableContext>
         )}
       </div>
       <div className="mt-4">
