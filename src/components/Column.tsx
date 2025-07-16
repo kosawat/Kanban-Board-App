@@ -1,16 +1,19 @@
 import React, { useState } from "react";
-// import Task from "./Task";
 import { ColumnType } from "@/types";
 import { useKanban } from "@/contexts/KanbanContext";
+import Task from "./Task";
 
 interface ColumnProps {
   column: ColumnType;
 }
 
 export default function Column({ column }: ColumnProps) {
-  const { dispatch } = useKanban();
+  const { state, dispatch } = useKanban();
   const [isEditing, setIsEditing] = useState(false);
   const [title, setTitle] = useState(column.title);
+  const [newTaskTitle, setNewTaskTitle] = useState("");
+
+  const tasks = state.tasks.filter((task) => task.columnId === column.id);
 
   const handleRename = () => {
     if (title.trim()) {
@@ -26,6 +29,16 @@ export default function Column({ column }: ColumnProps) {
       )
     ) {
       dispatch({ type: "DELETE_COLUMN", payload: { id: column.id } });
+    }
+  };
+
+  const handleAddTask = () => {
+    if (newTaskTitle.trim()) {
+      dispatch({
+        type: "ADD_TASK",
+        payload: { title: newTaskTitle, columnId: column.id },
+      });
+      setNewTaskTitle("");
     }
   };
 
@@ -60,9 +73,42 @@ export default function Column({ column }: ColumnProps) {
           </button>
         </div>
       )}
-      {/* Placeholder for tasks, to be implemented later */}
+      {/* Tasks */}
       <div className="mt-4 flex-1">
-        <p className="text-gray-500 text-sm">No tasks yet</p>
+        {tasks.length === 0 ? (
+          <p className="text-gray-500 text-sm">No tasks yet</p>
+        ) : (
+          tasks.map((task) => (
+            <Task
+              key={task.id}
+              task={task}
+              onDelete={() =>
+                dispatch({ type: "DELETE_TASK", payload: { id: task.id } })
+              }
+              onEdit={(updatedTask) =>
+                dispatch({ type: "UPDATE_TASK", payload: updatedTask })
+              }
+            />
+          ))
+        )}
+      </div>
+      <div className="mt-4">
+        <input
+          type="text"
+          value={newTaskTitle}
+          onChange={(e) => setNewTaskTitle(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") handleAddTask();
+          }}
+          placeholder="New task title"
+          className="w-full p-2 border rounded-lg text-sm"
+        />
+        <button
+          onClick={handleAddTask}
+          className="mt-2 w-full bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition"
+        >
+          Add Task
+        </button>
       </div>
     </div>
   );
