@@ -1,6 +1,10 @@
 # Kanban Board App
 
-A simple Kanban board application built with Next.js, TypeScript, and Tailwind CSS. This application allows users to manage tasks across columns, supporting drag-and-drop, keyboard navigation, and nested comments with localStorage persistence.
+A simple Kanban board application built with Next.js, TypeScript, and Tailwind CSS. 
+This application allows users to manage tasks across columns, supporting drag-and-drop, keyboard navigation, and nested comments with localStorage persistence.
+
+> **Deployed on Vercel:**  
+> You can try the live app [here](https://kanban-board-app-ks.vercel.app/).
 
 ## Features
 - Create, update, and delete tasks and columns
