@@ -4,6 +4,7 @@ import TaskModal from "./modals/TaskModal";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { GripVertical } from "lucide-react";
+import { useKanban } from "@/contexts/KanbanContext";
 
 interface TaskProps {
   task: TaskType;
@@ -12,10 +13,14 @@ interface TaskProps {
 }
 
 export default function Task({ task, onDelete, onEdit }: TaskProps) {
+  const { state, dispatch } = useKanban();
+
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id: task.id });
+
+  const isSelected = state.selectedTaskId === task.id;
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -27,8 +32,13 @@ export default function Task({ task, onDelete, onEdit }: TaskProps) {
       <div
         ref={setNodeRef}
         style={style}
-        className="bg-white p-3 mb-2 rounded-lg shadow hover:shadow-md transition"
-        onClick={() => setIsModalOpen(true)}
+        className={`bg-white p-3 mb-2 rounded-lg shadow hover:shadow-md transition cursor-pointer ${
+          isSelected ? "border-2 border-blue-500" : "border border-transparent"
+        }`}
+        onClick={() => {
+          dispatch({ type: "SELECT_TASK", payload: { taskId: task.id } });
+          setIsModalOpen(true);
+        }}
       >
         <div className="flex justify-between items-center">
           <div className="flex-1">

@@ -14,6 +14,7 @@ import { generateId } from "../utils/uuid";
 interface KanbanState {
   columns: ColumnType[];
   tasks: TaskType[];
+  selectedTaskId: string | null; // For keyboard navigation
 }
 
 type Action =
@@ -35,7 +36,8 @@ type Action =
   | {
       type: "MOVE_TASK";
       payload: { taskId: string; targetColumnId: string; targetIndex: number };
-    };
+    }
+  | { type: "SELECT_TASK"; payload: { taskId: string | null } };
 
 interface KanbanContextType {
   state: KanbanState;
@@ -51,6 +53,7 @@ const initialState: KanbanState = {
     { id: generateId(), title: "Done" },
   ],
   tasks: [],
+  selectedTaskId: null,
 };
 
 function kanbanReducer(state: KanbanState, action: Action): KanbanState {
@@ -79,6 +82,11 @@ function kanbanReducer(state: KanbanState, action: Action): KanbanState {
         tasks: state.tasks.filter(
           (task) => task.columnId !== action.payload.id
         ),
+        selectedTaskId:
+          state.tasks.find((task) => task.id === state.selectedTaskId)
+            ?.columnId === action.payload.id
+            ? null
+            : state.selectedTaskId,
       };
     case "ADD_TASK":
       return {
@@ -105,6 +113,10 @@ function kanbanReducer(state: KanbanState, action: Action): KanbanState {
       return {
         ...state,
         tasks: state.tasks.filter((task) => task.id !== action.payload.id),
+        selectedTaskId:
+          state.selectedTaskId === action.payload.id
+            ? null
+            : state.selectedTaskId,
       };
     case "ADD_COMMENT":
       return {
@@ -170,6 +182,12 @@ function kanbanReducer(state: KanbanState, action: Action): KanbanState {
       return {
         ...state,
         tasks: [...otherColumnTasks, ...targetColumnTasks],
+        selectedTaskId: taskId, // Keep task selected after move
+      };
+    case "SELECT_TASK":
+      return {
+        ...state,
+        selectedTaskId: action.payload.taskId,
       };
     default:
       return state;

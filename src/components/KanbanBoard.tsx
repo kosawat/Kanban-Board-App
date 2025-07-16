@@ -1,7 +1,7 @@
 "use client";
 
 import { useKanban } from "@/contexts/KanbanContext";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Column from "./Column";
 import { DndContext, DragEndEvent } from "@dnd-kit/core";
 
@@ -35,6 +35,84 @@ export default function KanbanBoard() {
       payload: { taskId, targetColumnId, targetIndex },
     });
   };
+  const handleKeyDown = (event: KeyboardEvent) => {
+    if (!state.selectedTaskId) return;
+
+    const task = state.tasks.find((t) => t.id === state.selectedTaskId);
+    if (!task) return;
+
+    const currentColumnId = task.columnId;
+    const currentColumnTasks = state.tasks.filter(
+      (t) => t.columnId === currentColumnId
+    );
+    const currentIndex = currentColumnTasks.findIndex((t) => t.id === task.id);
+    const columnIds = state.columns.map((col) => col.id);
+    const currentColumnIndex = columnIds.indexOf(currentColumnId);
+
+    switch (event.key) {
+      case "ArrowUp":
+        if (currentIndex > 0) {
+          dispatch({
+            type: "MOVE_TASK",
+            payload: {
+              taskId: task.id,
+              targetColumnId: currentColumnId,
+              targetIndex: currentIndex - 1,
+            },
+          });
+        }
+        break;
+      case "ArrowDown":
+        if (currentIndex < currentColumnTasks.length - 1) {
+          dispatch({
+            type: "MOVE_TASK",
+            payload: {
+              taskId: task.id,
+              targetColumnId: currentColumnId,
+              targetIndex: currentIndex + 1,
+            },
+          });
+        }
+        break;
+      case "ArrowLeft":
+        if (currentColumnIndex > 0) {
+          const targetColumnId = columnIds[currentColumnIndex - 1];
+          const targetColumnTasks = state.tasks.filter(
+            (t) => t.columnId === targetColumnId
+          );
+          dispatch({
+            type: "MOVE_TASK",
+            payload: {
+              taskId: task.id,
+              targetColumnId,
+              targetIndex: targetColumnTasks.length,
+            },
+          });
+        }
+        break;
+      case "ArrowRight":
+        if (currentColumnIndex < columnIds.length - 1) {
+          const targetColumnId = columnIds[currentColumnIndex + 1];
+          const targetColumnTasks = state.tasks.filter(
+            (t) => t.columnId === targetColumnId
+          );
+          dispatch({
+            type: "MOVE_TASK",
+            payload: {
+              taskId: task.id,
+              targetColumnId,
+              targetIndex: targetColumnTasks.length,
+            },
+          });
+        }
+        break;
+    }
+  };
+
+  useEffect(() => {
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [state.selectedTaskId, state.tasks, state.columns]);
 
   return (
     <DndContext onDragEnd={handleDragEnd}>
