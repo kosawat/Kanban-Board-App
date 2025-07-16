@@ -1,6 +1,6 @@
 "use client";
 
-import { Dialog } from "@headlessui/react";
+import { Dialog, DialogPanel, DialogTitle } from "@headlessui/react";
 import { useState } from "react";
 import { TaskType, CommentType } from "@/types";
 import { useKanban } from "@/contexts/KanbanContext";
@@ -207,10 +207,10 @@ export default function TaskModal({
     <Dialog open={isOpen} onClose={onClose} className="relative z-50">
       <div className="fixed inset-0 bg-black/30" aria-hidden="true" />
       <div className="fixed inset-0 flex items-center justify-center p-4">
-        <Dialog.Panel className="bg-white p-6 rounded-lg max-w-md w-full max-h-[80vh] overflow-y-auto">
-          <Dialog.Title className="text-xl font-bold mb-4">
+        <DialogPanel className="bg-white p-6 rounded-lg max-w-md w-full max-h-[80vh] overflow-y-auto">
+          <DialogTitle className="text-xl font-bold mb-4">
             Task Details
-          </Dialog.Title>
+          </DialogTitle>
           <div className="flex flex-col gap-4">
             <input
               type="text"
@@ -261,7 +261,7 @@ export default function TaskModal({
           >
             Close
           </button>
-        </Dialog.Panel>
+        </DialogPanel>
       </div>
     </Dialog>
   );
