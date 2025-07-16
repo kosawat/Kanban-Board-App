@@ -5,11 +5,12 @@ import { useState } from "react";
 import { TaskType, CommentType } from "@/types";
 import { useKanban } from "@/contexts/KanbanContext";
 
+// Props for the TaskModal component
 interface TaskModalProps {
   task: TaskType;
-  isOpen: boolean;
-  onClose: () => void;
-  onUpdate: (task: TaskType) => void;
+  isOpen: boolean; // Controls modal visibility
+  onClose: () => void; // Callback to close the modal
+  onUpdate: (task: TaskType) => void; // Callback to update the task
 }
 
 export default function TaskModal({
@@ -27,12 +28,14 @@ export default function TaskModal({
   const [replyingToId, setReplyingToId] = useState<string | null>(null);
   const [newReply, setNewReply] = useState("");
 
+  // Save task updates with validation
   const handleSaveTask = () => {
     if (title.trim()) {
       onUpdate({ ...task, title, description: description || undefined });
     }
   };
 
+  // Add a new comment with validation
   const handleAddComment = () => {
     if (newComment.trim()) {
       dispatch({
@@ -43,6 +46,7 @@ export default function TaskModal({
     }
   };
 
+  // Add a reply to a comment with validation
   const handleAddReply = (parentId: string) => {
     if (newReply.trim()) {
       dispatch({
@@ -54,11 +58,13 @@ export default function TaskModal({
     }
   };
 
+  // Editing a comment
   const handleEditComment = (comment: CommentType) => {
     setEditingCommentId(comment.id);
     setEditedCommentContent(comment.content);
   };
 
+  // Save edited comment with validation
   const handleSaveComment = (commentId: string) => {
     if (editedCommentContent.trim()) {
       dispatch({
@@ -70,6 +76,7 @@ export default function TaskModal({
     }
   };
 
+  // Delete comment with confirmation
   const handleDeleteComment = (commentId: string) => {
     if (window.confirm("Delete this comment?")) {
       dispatch({ type: "DELETE_COMMENT", payload: { id: commentId } });
@@ -81,10 +88,12 @@ export default function TaskModal({
     const commentMap = new Map<string, CommentType>();
     const tree: CommentType[] = [];
 
+    // Initialize comment map with children arrays
     comments.forEach((comment) => {
       commentMap.set(comment.id, { ...comment, children: [] });
     });
 
+    // Build tree structure for nested comments
     comments.forEach((comment) => {
       if (comment.parentId) {
         const parent = commentMap.get(comment.parentId);
@@ -102,6 +111,7 @@ export default function TaskModal({
 
   const commentTree = buildCommentTree(task.comments);
 
+  // Render a comment with nested replies
   const renderComment = (
     comment: CommentType & { children?: CommentType[] },
     level = 0

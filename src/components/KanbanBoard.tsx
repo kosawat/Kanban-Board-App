@@ -17,6 +17,7 @@ export default function KanbanBoard() {
   const [newColumnTitle, setNewColumnTitle] = useState("");
   const [draggedTask, setDraggedTask] = useState<UniqueIdentifier | null>(null);
 
+  // Add a new column with validation
   const handleAddColumn = () => {
     if (newColumnTitle.trim()) {
       dispatch({ type: "ADD_COLUMN", payload: { title: newColumnTitle } });
@@ -24,10 +25,12 @@ export default function KanbanBoard() {
     }
   };
 
+  // Handle drag start to track the dragged task for overlay
   const handleDragStart = (event: DragStartEvent) => {
     setDraggedTask(event.active.id);
   };
 
+  // Handle drag end to move tasks between or within columns
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
     setDraggedTask(null);
@@ -79,6 +82,7 @@ export default function KanbanBoard() {
     });
   };
 
+  // Handle keyboard navigation for selected task
   const handleKeyDown = (event: KeyboardEvent) => {
     if (!state.selectedTaskId) return;
 
@@ -153,6 +157,7 @@ export default function KanbanBoard() {
     }
   };
 
+  // Add keyboard event listener
   useEffect(() => {
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
@@ -162,6 +167,8 @@ export default function KanbanBoard() {
     <DndContext onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
       <div className="p-4">
         <h1 className="text-2xl font-bold mb-4">Kanban Board</h1>
+
+        {/* Form to add new column */}
         <div className="flex gap-4 mb-4">
           <input
             type="text"
@@ -177,12 +184,16 @@ export default function KanbanBoard() {
             Add Column
           </button>
         </div>
+
+        {/* Render columns */}
         <div className="flex gap-4 flex-wrap">
           {state.columns.map((column) => (
             <Column column={column} key={column.id} />
           ))}
         </div>
       </div>
+
+      {/* Overlay for dragged task */}
       <DragOverlay>
         {draggedTask && (
           <Task

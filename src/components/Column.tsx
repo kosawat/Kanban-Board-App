@@ -8,6 +8,7 @@ import {
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 
+// Props for the Column component
 interface ColumnProps {
   column: ColumnType;
 }
@@ -17,10 +18,14 @@ export default function Column({ column }: ColumnProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [title, setTitle] = useState(column.title);
   const [newTaskTitle, setNewTaskTitle] = useState("");
+
+  // Configure column as a drop target for drag-and-drop
   const { setNodeRef, isOver } = useDroppable({ id: column.id });
 
+  // Filter tasks for this column
   const tasks = state.tasks.filter((task) => task.columnId === column.id);
 
+  // Rename column with validation
   const handleRename = () => {
     if (title.trim()) {
       dispatch({ type: "RENAME_COLUMN", payload: { id: column.id, title } });
@@ -28,6 +33,7 @@ export default function Column({ column }: ColumnProps) {
     }
   };
 
+  // Delete column with confirmation
   const handleDelete = () => {
     if (
       window.confirm(
@@ -38,6 +44,7 @@ export default function Column({ column }: ColumnProps) {
     }
   };
 
+  // Add new task with validation
   const handleAddTask = () => {
     if (newTaskTitle.trim()) {
       dispatch({
@@ -57,6 +64,7 @@ export default function Column({ column }: ColumnProps) {
       }`}
       ref={setNodeRef}
     >
+      {/* Column title or edit input */}
       {isEditing ? (
         <input
           type="text"
@@ -86,7 +94,8 @@ export default function Column({ column }: ColumnProps) {
           </button>
         </div>
       )}
-      {/* Tasks */}
+
+      {/* Task list with sortable context */}
       <div className="mt-4 flex-1">
         {tasks.length === 0 ? (
           <p className="text-gray-500 text-sm">No tasks yet</p>
@@ -110,6 +119,8 @@ export default function Column({ column }: ColumnProps) {
           </SortableContext>
         )}
       </div>
+
+      {/* Form to add new task */}
       <div className="mt-4">
         <input
           type="text"

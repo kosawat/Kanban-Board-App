@@ -11,12 +11,14 @@ import { useLocalStorage } from "../hooks/useLocalStorage";
 import { ColumnType, TaskType } from "../types";
 import { generateId } from "../utils/uuid";
 
+// State interface for the Kanban board
 interface KanbanState {
   columns: ColumnType[];
   tasks: TaskType[];
-  selectedTaskId: string | null; // For keyboard navigation
+  selectedTaskId: string | null; // Tracks the currently selected task for keyboard navigation
 }
 
+// Action types for state management
 type Action =
   | { type: "ADD_COLUMN"; payload: { title: string } }
   | { type: "RENAME_COLUMN"; payload: { id: string; title: string } }
@@ -39,13 +41,16 @@ type Action =
     }
   | { type: "SELECT_TASK"; payload: { taskId: string | null } };
 
+// Context type for providing state and dispatch
 interface KanbanContextType {
   state: KanbanState;
   dispatch: React.Dispatch<Action>;
 }
 
+// Create context for Kanban state management
 const KanbanContext = createContext<KanbanContextType | undefined>(undefined);
 
+// Initial state with default columns
 const initialState: KanbanState = {
   columns: [
     { id: generateId(), title: "To Do" },
@@ -56,9 +61,15 @@ const initialState: KanbanState = {
   selectedTaskId: null,
 };
 
+// Reducer to handle state updates
 function kanbanReducer(state: KanbanState, action: Action): KanbanState {
   switch (action.type) {
     case "ADD_COLUMN":
+      // Prevent adding empty column titles
+      if (!action.payload.title.trim()) {
+        console.warn("Cannot add column with empty title");
+        return state;
+      }
       return {
         ...state,
         columns: [
@@ -67,6 +78,11 @@ function kanbanReducer(state: KanbanState, action: Action): KanbanState {
         ],
       };
     case "RENAME_COLUMN":
+      // Prevent renaming to empty title
+      if (!action.payload.title.trim()) {
+        console.warn("Cannot rename column to empty title");
+        return state;
+      }
       return {
         ...state,
         columns: state.columns.map((col) =>
@@ -89,6 +105,11 @@ function kanbanReducer(state: KanbanState, action: Action): KanbanState {
             : state.selectedTaskId,
       };
     case "ADD_TASK":
+      // Prevent adding empty task titles
+      if (!action.payload.title.trim()) {
+        console.warn("Cannot add task with empty title");
+        return state;
+      }
       return {
         ...state,
         tasks: [
@@ -103,6 +124,11 @@ function kanbanReducer(state: KanbanState, action: Action): KanbanState {
         ],
       };
     case "UPDATE_TASK":
+      // Validate task exists and has a title
+      if (!action.payload.title.trim()) {
+        console.warn("Cannot update task with empty title");
+        return state;
+      }
       return {
         ...state,
         tasks: state.tasks.map((task) =>
@@ -119,6 +145,11 @@ function kanbanReducer(state: KanbanState, action: Action): KanbanState {
             : state.selectedTaskId,
       };
     case "ADD_COMMENT":
+      // Prevent adding empty comments
+      if (!action.payload.content.trim()) {
+        console.warn("Cannot add empty comment");
+        return state;
+      }
       return {
         ...state,
         tasks: state.tasks.map((task) =>
@@ -139,6 +170,11 @@ function kanbanReducer(state: KanbanState, action: Action): KanbanState {
         ),
       };
     case "UPDATE_COMMENT":
+      // Prevent updating to empty comment
+      if (!action.payload.content.trim()) {
+        console.warn("Cannot update comment to empty content");
+        return state;
+      }
       return {
         ...state,
         tasks: state.tasks.map((task) => ({
@@ -163,6 +199,8 @@ function kanbanReducer(state: KanbanState, action: Action): KanbanState {
     case "MOVE_TASK":
       const { taskId, targetColumnId, targetIndex } = action.payload;
       const task = state.tasks.find((t) => t.id === taskId);
+
+      // Validate task
       if (!task) return state;
 
       // Remove task from current position
@@ -194,7 +232,9 @@ function kanbanReducer(state: KanbanState, action: Action): KanbanState {
   }
 }
 
+// Provider component to wrap the app with Kanban context
 export function KanbanProvider({ children }: { children: ReactNode }) {
+  // Load initial state from localStorage or use default
   const [persistedState, setPersistedState] = useLocalStorage<KanbanState>(
     "kanban-state",
     initialState

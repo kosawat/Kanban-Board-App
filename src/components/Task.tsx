@@ -6,10 +6,11 @@ import { CSS } from "@dnd-kit/utilities";
 import { GripVertical } from "lucide-react";
 import { useKanban } from "@/contexts/KanbanContext";
 
+// Props for the Task component
 interface TaskProps {
   task: TaskType;
-  onDelete: () => void;
-  onEdit: (task: TaskType) => void;
+  onDelete: () => void; // Callback to delete the task
+  onEdit: (task: TaskType) => void; // Callback to update the task
 }
 
 export default function Task({ task, onDelete, onEdit }: TaskProps) {
@@ -17,14 +18,24 @@ export default function Task({ task, onDelete, onEdit }: TaskProps) {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const { attributes, listeners, setNodeRef, transform, transition } =
-    useSortable({ id: task.id });
+  // Configure drag-and-drop with @dnd-kit/sortable
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: task.id });
 
   const isSelected = state.selectedTaskId === task.id;
 
+  // Apply styles for drag-and-drop animations
   const style = {
     transform: CSS.Transform.toString(transform),
-    transition,
+    transition: transition || "transform 200ms ease",
+    opacity: isDragging ? 0.6 : 1, // Reduce opacity during drag
+    boxShadow: isDragging ? "0 8px 16px rgba(0, 0, 0, 0.2)" : undefined, // Stronger shadow during drag
   };
 
   return (
@@ -49,6 +60,7 @@ export default function Task({ task, onDelete, onEdit }: TaskProps) {
             )}
           </div>
           <div className="flex items-center gap-2">
+            {/* Drag handle for drag-and-drop */}
             <button
               {...attributes}
               {...listeners}
@@ -57,9 +69,11 @@ export default function Task({ task, onDelete, onEdit }: TaskProps) {
             >
               <GripVertical size={16} />
             </button>
+
+            {/* Button to open task details modal */}
             <button
               onClick={(e) => {
-                e.stopPropagation();
+                e.stopPropagation(); // Prevent card click from triggering
                 setIsModalOpen(true);
               }}
               className="text-blue-500 hover:text-blue-700 text-xs"
@@ -67,9 +81,11 @@ export default function Task({ task, onDelete, onEdit }: TaskProps) {
             >
               Details
             </button>
+
+            {/* Button to delete task with confirmation */}
             <button
               onClick={(e) => {
-                e.stopPropagation();
+                e.stopPropagation(); // Prevent card click from triggering
                 if (window.confirm(`Delete task "${task.title}"?`)) onDelete();
               }}
               className="text-red-500 hover:text-red-700 text-xs"
@@ -80,6 +96,8 @@ export default function Task({ task, onDelete, onEdit }: TaskProps) {
           </div>
         </div>
       </div>
+
+      {/* Modal for task details and comments */}
       <TaskModal
         task={task}
         isOpen={isModalOpen}
