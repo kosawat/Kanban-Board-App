@@ -17,7 +17,7 @@ export default function Column({ column }: ColumnProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [title, setTitle] = useState(column.title);
   const [newTaskTitle, setNewTaskTitle] = useState("");
-  const { setNodeRef } = useDroppable({ id: column.id });
+  const { setNodeRef, isOver } = useDroppable({ id: column.id });
 
   const tasks = state.tasks.filter((task) => task.columnId === column.id);
 
@@ -50,7 +50,11 @@ export default function Column({ column }: ColumnProps) {
 
   return (
     <div
-      className="bg-gray-100 p-4 rounded-lg w-64 min-h-[200px] flex flex-col"
+      className={`bg-gray-100 p-4 rounded-lg w-64 min-h-[200px] flex flex-col transition-colors ${
+        isOver
+          ? "border-2 border-blue-300 bg-blue-50"
+          : "border border-transparent"
+      }`}
       ref={setNodeRef}
     >
       {isEditing ? (

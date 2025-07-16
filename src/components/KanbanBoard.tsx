@@ -3,11 +3,19 @@
 import { useKanban } from "@/contexts/KanbanContext";
 import React, { useEffect, useState } from "react";
 import Column from "./Column";
-import { DndContext, DragEndEvent } from "@dnd-kit/core";
+import {
+  DndContext,
+  DragEndEvent,
+  DragOverlay,
+  DragStartEvent,
+  UniqueIdentifier,
+} from "@dnd-kit/core";
+import Task from "./Task";
 
 export default function KanbanBoard() {
   const { state, dispatch } = useKanban();
   const [newColumnTitle, setNewColumnTitle] = useState("");
+  const [draggedTask, setDraggedTask] = useState<UniqueIdentifier | null>(null);
 
   const handleAddColumn = () => {
     if (newColumnTitle.trim()) {
@@ -16,8 +24,13 @@ export default function KanbanBoard() {
     }
   };
 
+  const handleDragStart = (event: DragStartEvent) => {
+    setDraggedTask(event.active.id);
+  };
+
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
+    setDraggedTask(null);
     if (!over) return;
 
     const taskId = active.id as string;
@@ -121,7 +134,7 @@ export default function KanbanBoard() {
   }, [state.selectedTaskId, state.tasks, state.columns]);
 
   return (
-    <DndContext onDragEnd={handleDragEnd}>
+    <DndContext onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
       <div className="p-4">
         <h1 className="text-2xl font-bold mb-4">Kanban Board</h1>
         <div className="flex gap-4 mb-4">
@@ -145,6 +158,15 @@ export default function KanbanBoard() {
           ))}
         </div>
       </div>
+      <DragOverlay>
+        {draggedTask && (
+          <Task
+            task={state.tasks.find((task) => task.id === draggedTask)!}
+            onDelete={() => {}}
+            onEdit={() => {}}
+          />
+        )}
+      </DragOverlay>
     </DndContext>
   );
 }
