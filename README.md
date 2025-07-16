@@ -24,9 +24,9 @@ A simple Kanban board application built with Next.js, TypeScript, and Tailwind C
 
 3. Start the development server:
     ```sh
-    npm start
+    npm run dev
     # or
-    yarn start
+    yarn dev
     ```
 
 4. Open [http://localhost:3000](http://localhost:3000) in your browser.
