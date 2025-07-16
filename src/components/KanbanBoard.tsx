@@ -34,26 +34,51 @@ export default function KanbanBoard() {
     if (!over) return;
 
     const taskId = active.id as string;
-    const targetColumnId = over.id as string;
+    const overId = over.id as string;
 
-    // Validate that targetColumnId is a column
-    const isValidColumn = state.columns.some(
-      (col) => col.id === targetColumnId
-    );
-    if (!isValidColumn) return;
+    // Determine if the drop target is a column or a task
+    const isOverColumn = state.columns.some((col) => col.id === overId);
+    const isOverTask = state.tasks.some((task) => task.id === overId);
 
-    // Find the tasks in the target column to determine the index
-    const targetColumnTasks = state.tasks.filter(
-      (task) => task.columnId === targetColumnId
-    );
-    const targetIndex =
-      over.data.current?.sortable?.index ?? targetColumnTasks.length;
+    if (!isOverColumn && !isOverTask) return;
+
+    let targetColumnId: string;
+    let targetIndex: number;
+    let targetColumnTasks;
+
+    if (isOverColumn) {
+      // Dropped directly on a column
+      targetColumnId = overId;
+      targetColumnTasks = state.tasks.filter(
+        (task) => task.columnId === targetColumnId
+      );
+      targetIndex = targetColumnTasks.length; // Append to end of column
+    } else {
+      // Dropped on a task
+      const overTask = state.tasks.find((task) => task.id === overId)!;
+      targetColumnId = overTask.columnId;
+      targetColumnTasks = state.tasks.filter(
+        (task) => task.columnId === targetColumnId
+      );
+      const overIndex = targetColumnTasks.findIndex(
+        (task) => task.id === overId
+      );
+
+      // Adjust index based on drag direction (above or below)
+      const activeRect = active.rect.current.translated;
+      const overRect = over.rect;
+      const isDraggingDown =
+        activeRect && overRect && activeRect.top < overRect.top;
+
+      targetIndex = isDraggingDown ? overIndex + 1 : overIndex;
+    }
 
     dispatch({
       type: "MOVE_TASK",
       payload: { taskId, targetColumnId, targetIndex },
     });
   };
+
   const handleKeyDown = (event: KeyboardEvent) => {
     if (!state.selectedTaskId) return;
 
