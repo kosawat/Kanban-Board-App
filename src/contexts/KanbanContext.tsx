@@ -26,7 +26,10 @@ type Action =
     }
   | { type: "UPDATE_TASK"; payload: TaskType }
   | { type: "DELETE_TASK"; payload: { id: string } }
-  | { type: "ADD_COMMENT"; payload: { taskId: string; content: string } }
+  | {
+      type: "ADD_COMMENT";
+      payload: { taskId: string; content: string; parentId?: string };
+    }
   | { type: "UPDATE_COMMENT"; payload: { id: string; content: string } }
   | { type: "DELETE_COMMENT"; payload: { id: string } };
 
@@ -112,6 +115,7 @@ function kanbanReducer(state: KanbanState, action: Action): KanbanState {
                     id: generateId(),
                     content: action.payload.content,
                     taskId: action.payload.taskId,
+                    parentId: action.payload.parentId,
                   },
                 ],
               }
