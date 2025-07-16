@@ -23,6 +23,12 @@ export default function KanbanBoard() {
     const taskId = active.id as string;
     const targetColumnId = over.id as string;
 
+    // Validate that targetColumnId is a column
+    const isValidColumn = state.columns.some(
+      (col) => col.id === targetColumnId
+    );
+    if (!isValidColumn) return;
+
     // Find the tasks in the target column to determine the index
     const targetColumnTasks = state.tasks.filter(
       (task) => task.columnId === targetColumnId
