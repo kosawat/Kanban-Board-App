@@ -1,24 +1,90 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Kanban Board App
+
+A simple Kanban board application built with Next.js, TypeScript, and Tailwind CSS. This application allows users to manage tasks across columns, supporting drag-and-drop, keyboard navigation, and nested comments with localStorage persistence.
+
+## Features
+- Create, update, and delete tasks and columns
+- Drag-and-drop task management
+- Move selected task with keyboard navigation
+- Persistent state using `localStorage`
 
 ## Getting Started
+1. Clone the repository:
+    ```sh
+    git clone https://github.com/kosawat/Kanban-Board-App.git
+    cd Kanban-Board-App
+    ```
 
-First, run the development server:
+2. Install dependencies:
+    ```sh
+    npm install
+    # or
+    yarn install
+    ```
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+3. Start the development server:
+    ```sh
+    npm start
+    # or
+    yarn start
+    ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+4. Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Usage
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+**Managing Columns**
+- Add a Column: Enter a title in the input field at the top and click "Add Column".
+- Rename a Column: Click the column title, edit it, and press Enter or click away.
+- Delete a Column: Click the "Delete" button on a column (confirms before deleting, removing all tasks in the column).
+
+**Managing Tasks**
+- Add a Task: In a column, enter a title in the input field and click "Add Task" or press Enter.
+- Edit a Task: Click the "Details" button on a task card to open the modal, update the title/description, and click "Save Task".
+- Open Details: Click the "Details" button to view/edit the task in a modal.
+- Delete a Task: Click the "Delete" button on a task card (confirms before deleting).
+
+**Drag-and-Drop**
+- Move Tasks: Use the drag handle (⋮⋮) on a task card to drag it within a column or to another column.
+- Placement: Drop tasks above or below other tasks in a column for precise ordering.
+
+**Keyboard Navigation**
+* Select a Task: Click a task card to select it (indicated by a blue border).
+* Move Tasks:
+  + ArrowUp: Move the task up within the same column.
+  + ArrowDown: Move the task down within the same column.
+  + ArrowLeft: Move the task to the previous column.
+  + ArrowRight: Move the task to the next column.
+
+**Managing Comments**
+- Add a Comment: In the task modal, enter text in the comment field and click "Add Comment".
+- Reply to a Comment: Click "Reply" on a comment, enter text, and click "Add Reply".
+- Edit a Comment: Click "Edit" on a comment, update the text, and click "Save".
+- Delete a Comment: Click "Delete" on a comment (confirms before deleting).
+
+## File Structure
+- src/app/page.tsx: Root component,
+- src/components/KanbanBoard.tsx: Main Kanban board component, handling the Kanban board layout, drag-and-drop logic, and keyboard navigation.
+- src/components/Column.tsx: Renders a column with tasks, supporting renaming, deletion, and task addition.
+- src/components/Task.tsx: Renders a draggable task card with selection and modal controls.
+- src/components/modals/TaskModal.tsx: Displays a modal for task details and nested comments.
+- src/contexts/KanbanContext.tsx: Manages global state (columns, tasks, selected task) using React Context and useReducer.
+- src/hooks/useLocalStorage.ts: Custom hook for persisting state to localStorage with error handling.
+- src/types/index.ts: TypeScript type definitions for Column, Task, and Comment.
+- src/utils/uuid.ts: Utility for generating unique IDs.
+
+## Technical Details
+**Tech Stack:**
+- Next.js: React framework with App Router.
+- TypeScript: Ensures type safety for state, props, and actions.
+- Tailwind CSS: Utility-first CSS for responsive and consistent styling.
+- @dnd-kit/core & @dnd-kit/sortable: Drag-and-drop functionality with smooth transitions and precise placement.
+- Headless UI: Accessible modal component for task details.
+- Lucide React: Icons for drag handle and other UI elements.
+
+**State Management:**
+- Uses React Context API with useReducer for centralized state management.
+- Persists state to localStorage via useLocalStorage hook.
 
 ## Learn More
 
