@@ -38,7 +38,7 @@ This application allows users to manage tasks across columns, supporting drag-an
 ## Usage
 
 **Managing Columns**
-- Add a Column: Enter a title in the input field at the top and click "Add Column".
+- Add a Column: Enter a title in the input field at the top and click "Add Column" or press Enter.
 - Rename a Column: Click the column title, edit it, and press Enter or click away.
 - Delete a Column: Click the "Delete" button on a column (confirms before deleting, removing all tasks in the column).
 
@@ -84,23 +84,13 @@ This application allows users to manage tasks across columns, supporting drag-an
 - Tailwind CSS: Utility-first CSS for responsive and consistent styling.
 - @dnd-kit/core & @dnd-kit/sortable: Drag-and-drop functionality with smooth transitions and precise placement.
 - Headless UI: Accessible modal component for task details.
-- Lucide React: Icons for drag handle and other UI elements.
+- Lucide React: Icons for drag handle UI element.
 
 **State Management:**
 - Uses React Context API with useReducer for centralized state management.
 - Persists state to localStorage via useLocalStorage hook.
 
 ## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- [Next.js Documentation](https://nextjs.org/docs)
+- [@dnd-kit Documentation](https://docs.dndkit.com/)
+- [Headless UI](https://headlessui.com/)
