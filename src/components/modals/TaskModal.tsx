@@ -222,7 +222,7 @@ export default function TaskModal({
             <textarea
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              className="p-2 border rounded text-sm"
+              className="p-2 border rounded text-sm md:h-32"
               placeholder="Task description (optional)"
             />
             <button
