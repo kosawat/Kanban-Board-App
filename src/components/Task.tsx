@@ -53,11 +53,6 @@ export default function Task({ task, onDelete, onEdit }: TaskProps) {
         <div className="flex justify-between items-center">
           <div className="flex-1">
             <h3 className="font-medium text-sm">{task.title}</h3>
-            {task.description && (
-              <p className="text-gray-500 text-xs mt-1">
-                {task.description.substring(0, 50)}...
-              </p>
-            )}
           </div>
           <div className="flex items-center gap-2">
             {/* Drag handle for drag-and-drop */}
